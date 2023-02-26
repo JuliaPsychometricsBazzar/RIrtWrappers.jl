@@ -3,12 +3,13 @@ module Mirt
 using CondaPkg
 using RCall
 using FittedItemBanks
+using ..RIrtWrappers: withrenv
 
 export fit_mirt, fit_2pl, fit_3pl, fit_4pl, fit_gpcm
 
 function fit_mirt(df; kwargs...)
     @debug "Fitting IRT model"
-    CondaPkg.withenv() do
+    withrenv() do
         R"""
         library(mirt)
         """
@@ -30,22 +31,22 @@ function fit_gpcm(df; kwargs...)
     params = fit_mirt(df; model=1, itemtype="gpcm", kwargs...)
     discriminations = convert(Matrix, select(params, r"a\d+"))
     cut_points = convert(Matrix, select(params, r"d\d+"))
-    GPCMItemBank(discriminations, cut_points, labels=params[!, "label"])
+    GPCMItemBank(discriminations, cut_points), params[!, "label"]
 end
 
 function fit_4pl(df; kwargs...)
     params = fit_mirt(df; model=1, itemtype="4PL", kwargs...)
-    ItemBank4PL(params[!, "d"], params[!, "a1"], params[!, "g"], 1.0 .- params[!, "u"]; labels=params[!, "label"])
+    ItemBank4PL(params[!, "d"], params[!, "a1"], params[!, "g"], 1.0 .- params[!, "u"]), params[!, "label"]
 end
 
 function fit_3pl(df; kwargs...)
     params = fit_mirt(df; model=1, itemtype="3PL", kwargs...)
-    ItemBank3PL(params[!, "d"], params[!, "a1"], params[!, "g"]; labels=params[!, "label"])
+    ItemBank3PL(params[!, "d"], params[!, "a1"], params[!, "g"]), params[!, "label"]
 end
 
 function fit_2pl(df; kwargs...)
     params = fit_mirt(df; model=1, itemtype="2PL", kwargs...)
-    ItemBank2PL(params[!, "d"], params[!, "a1"]; labels=labels)
+    ItemBank2PL(params[!, "d"], params[!, "a1"]), params[!, "label"]
 end
 
 end
