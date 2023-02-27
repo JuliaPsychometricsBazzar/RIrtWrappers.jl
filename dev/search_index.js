@@ -1,0 +1,3 @@
+var documenterSearchIndex = {"docs":
+[{"location":"#RIrtWrappers.jl","page":"Getting started","title":"RIrtWrappers.jl","text":"","category":"section"},{"location":"","page":"Getting started","title":"Getting started","text":"This package wraps some R packages for fitting IRT models.","category":"page"},{"location":"","page":"Getting started","title":"Getting started","text":"CurrentModule = RIrtWrappers","category":"page"},{"location":"","page":"Getting started","title":"Getting started","text":"","category":"page"},{"location":"","page":"Getting started","title":"Getting started","text":"Modules = [RIrtWrappers]","category":"page"}]
+}
