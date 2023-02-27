@@ -8,6 +8,9 @@ using ..RIrtWrappers: withrenv
 
 export fit_ks_dichotomous
 
+"""
+Fit a kernel smoothed dichotomous IRT model to the data in `df`.
+"""
 function fit_ks_dichotomous(df; kwargs...)
     (item_idxs, resp_idxs, weights, evalpoints, occs, bandwidth) = __fit_ks(df; key=1, format=2, kwargs...)
     # XXX: Weights unused. What is it

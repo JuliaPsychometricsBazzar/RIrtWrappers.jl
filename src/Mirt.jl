@@ -1,3 +1,6 @@
+"""
+This module wraps the mirt R module. See [CRAN](https://cran.r-project.org/web/packages/mirt/index.html).
+"""
 module Mirt
 
 using CondaPkg
@@ -27,6 +30,9 @@ function fit_mirt(df; kwargs...)
     end
 end
 
+"""
+Fit a Generalized Partial Credit Model (GPCM) to the data in `df`.
+"""
 function fit_gpcm(df; kwargs...)
     params = fit_mirt(df; model=1, itemtype="gpcm", kwargs...)
     discriminations = convert(Matrix, select(params, r"a\d+"))
@@ -34,16 +40,25 @@ function fit_gpcm(df; kwargs...)
     GPCMItemBank(discriminations, cut_points), params[!, "label"]
 end
 
+"""
+Fit a 4PL model to the data in `df`.
+"""
 function fit_4pl(df; kwargs...)
     params = fit_mirt(df; model=1, itemtype="4PL", kwargs...)
     ItemBank4PL(params[!, "d"], params[!, "a1"], params[!, "g"], 1.0 .- params[!, "u"]), params[!, "label"]
 end
 
+"""
+Fit a 3PL model to the data in `df`.
+"""
 function fit_3pl(df; kwargs...)
     params = fit_mirt(df; model=1, itemtype="3PL", kwargs...)
     ItemBank3PL(params[!, "d"], params[!, "a1"], params[!, "g"]), params[!, "label"]
 end
 
+"""
+Fit a 2PL model to the data in `df`.
+"""
 function fit_2pl(df; kwargs...)
     params = fit_mirt(df; model=1, itemtype="2PL", kwargs...)
     ItemBank2PL(params[!, "d"], params[!, "a1"]), params[!, "label"]

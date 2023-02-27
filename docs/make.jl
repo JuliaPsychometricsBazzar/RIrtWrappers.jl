@@ -13,7 +13,8 @@ makedocs(;
     sitename="RIrtWrappers.jl",
     format=format,
     pages=[
-        "Getting started" => "index.md",
+        "Home" => "index.md",
+        "Modules" => ["mirt.md", "kernsmoothirt.md"]
     ],
 )
 
