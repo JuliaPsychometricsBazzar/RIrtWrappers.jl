@@ -30,8 +30,6 @@ jobs:
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-      - name: Fix rcall
-        run: julia --project=. src/fix_rcall.jl
       - uses: julia-actions/cache@v1
       - name: Set resolve env
         run: |
@@ -43,7 +41,8 @@ jobs:
                                     ]);
                                     Pkg.resolve();
                                     Pkg.instantiate()'
-      - uses: julia-actions/julia-buildpkg@v1
+      - name: Fix rcall
+        run: julia --project=. src/fix_rcall.jl
       - name: Run tests
         run: |
           julia --project=. -e 'using Pkg; Pkg.test()'
