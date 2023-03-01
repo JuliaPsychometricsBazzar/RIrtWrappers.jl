@@ -4,7 +4,6 @@ using CondaPkg
 using RCall
 using FittedItemBanks: DichotomousPointsItemBank, DichotomousSmoothedItemBank, KernelSmoother
 using FittedItemBanks: gauss_kern, uni_kern, quad_kern
-using ..RIrtWrappers: withrenv
 
 export fit_ks_dichotomous
 
@@ -29,20 +28,18 @@ function __fit_ks(df; kernel="gaussian", kwargs...)
         error("Kernel must be Guassian")
     end
     @debug "Fitting IRT model"
-    withrenv() do
-        R"""
-        library(KernSmoothIRT)
-        """
-        irt_model = rcall(:ksIRT, df; kwargs...)
-        evalpoints = rcopy(R"$irt_model$evalpoints")
-        occs = rcopy(R"$irt_model$OCC")
-        bandwidth = rcopy(R"$irt_model$bandwidth")
-        item_idxs = Int.(@view occs[:, 1])
-        resp_idxs = Int.(@view occs[:, 2])
-        weights = Int.(@view occs[:, 3])
-        occs = occs[:, 4:end]
-        (item_idxs, resp_idxs, weights, evalpoints, occs, bandwidth)
-    end
+    R"""
+    library(KernSmoothIRT)
+    """
+    irt_model = rcall(:ksIRT, df; kwargs...)
+    evalpoints = rcopy(R"$irt_model$evalpoints")
+    occs = rcopy(R"$irt_model$OCC")
+    bandwidth = rcopy(R"$irt_model$bandwidth")
+    item_idxs = Int.(@view occs[:, 1])
+    resp_idxs = Int.(@view occs[:, 2])
+    weights = Int.(@view occs[:, 3])
+    occs = occs[:, 4:end]
+    (item_idxs, resp_idxs, weights, evalpoints, occs, bandwidth)
 end
 
 end

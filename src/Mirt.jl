@@ -6,28 +6,25 @@ module Mirt
 using CondaPkg
 using RCall
 using FittedItemBanks
-using ..RIrtWrappers: withrenv
 
 export fit_mirt, fit_2pl, fit_3pl, fit_4pl, fit_gpcm
 
 function fit_mirt(df; kwargs...)
     @debug "Fitting IRT model"
-    withrenv() do
+    R"""
+    library(mirt)
+    """
+    irt_model = rcall(:mirt, df; kwargs...)
+    df = rcopy(
         R"""
-        library(mirt)
+        coefs_list <- coef($irt_model)
+        coefs_list["GroupPars"] <- NULL
+        coefs_df <- do.call(rbind.data.frame, c(coefs_list, stringsAsFactors=FALSE))
+        cbind(label = names(coefs_list), coefs_df)
         """
-        irt_model = rcall(:mirt, df; kwargs...)
-        df = rcopy(
-            R"""
-            coefs_list <- coef($irt_model)
-            coefs_list["GroupPars"] <- NULL
-            coefs_df <- do.call(rbind.data.frame, c(coefs_list, stringsAsFactors=FALSE))
-            cbind(label = names(coefs_list), coefs_df)
-            """
-        )
-        @info "fit_mirt" df
-        df
-    end
+    )
+    @info "fit_mirt" df
+    df
 end
 
 """
