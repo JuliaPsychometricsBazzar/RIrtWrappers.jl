@@ -7,6 +7,16 @@ const restart_on_error = false
 needs_restart = false
 
 
+function find_rcall_path()
+    for (uuid, info) in Pkg.dependencies()
+        if info.name == "RCall"
+            return info.source
+        end
+    end
+    return nothing
+end
+
+
 function fix_rcall(explicit)
     global needs_restart
     if needs_restart
@@ -14,12 +24,22 @@ function fix_rcall(explicit)
     end
     CondaPkg.resolve()
     target_rhome = "$(CondaPkg.envdir())/lib/R"
+    rcall_path = find_rcall_path()
+    if rcall_path == nothing
+        if explicit
+            println(stderr, "RCall not found in the current project!")
+        else
+            # Do nothing because the user will get a more familiar error as soon as RCall is imported
+        end
+        return
+    end
     need_update = false
     try
-        include(dirname(dirname(Base.find_package("RCall"))) * "/deps/deps.jl")
+        include(rcall_path * "/deps/deps.jl")
         need_update = realpath(target_rhome) != realpath(Rhome)
     catch err
         if err isa SystemError
+            # RCall has not been built yet
             need_update = true
         else
             rethrow()
