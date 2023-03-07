@@ -41,7 +41,7 @@ jobs:
                                     Pkg.resolve();
                                     Pkg.instantiate()'
       - name: Fix rcall
-        run: julia --project=. src/fix_rcall.jl
+        run: julia --project=. src/FixRCall.jl
       - name: Run tests
         run: |
           julia --project=. -e 'using Pkg; Pkg.test()'
